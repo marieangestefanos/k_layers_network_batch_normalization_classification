@@ -1,4 +1,4 @@
-addpath("Documents/kth/dl/labs/lab3/");
+addpath("/home/stefanom/Documents/kth/dl/labs/lab3");
 train_path = "data_batch_1.mat";
 valid_path = "data_batch_2.mat";
 test_path = "test_batch.mat";
@@ -21,23 +21,30 @@ X_test = Preprocess(X_test, mean_train, std_train);
 [~, n] = size(X_train);
 
 %% INIT NETWORK PARAM
-% m = 50;
 k = 3;
 hid_dim = [20 50];
 NetParams = InitializeParam(X_train, Y_train, hid_dim, k);
-% W = theta(1:2);
-% b = theta(3:4);
-% d_batch = 10;
-% end_batch = 3;
-% h = 1e-5;
-% lambda = 0;
-% eps = 1e-6;
-% n_batch = 100;
-% eta = 0.001;
-% n_epochs = 200;
+W = NetParams.W;
+b = NetParams.b;
+d_batch = 10;
+end_batch = 3;
+h = 1e-5;
+lambda = 0;
+eps = 1e-6;
+n_batch = 100;
+eta = 0.001;
+n_epochs = 200;
 
-% %% EVAL THE NETWORK FUNCTION
-% [H, P] = EvaluateClassifier(X_train, theta);
+%% EVAL THE NETWORK FUNCTION
+
+X_batch = X_train(1:d_batch, 1:end_batch);
+W1_batch = W{1};
+W{1} = W1_batch(:, 1:d_batch);
+
+NetParams.W = W;
+[Xs, P] = EvaluateClassifier(X_batch, NetParams);
+
+% [Xs, P] = EvaluateClassifier(X_train, NetParams);
 
 % %% COMPUTE THE COST FUNCTION
 % [J, loss] = ComputeCost(X_train, Y_train, W, b, lambda);

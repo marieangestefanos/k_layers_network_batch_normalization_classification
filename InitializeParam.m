@@ -6,7 +6,7 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, k)
 
     % Just checking the number of layers
     if nb_hid_layers ~= (k-1)
-        error("Error: hidd_dim and nb of layers do not match.")
+        error("Error in InitializeParam: hidd_dim and nb of layers do not match.")
     end
 
     % First hidden layer param
