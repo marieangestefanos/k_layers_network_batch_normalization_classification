@@ -1,15 +1,12 @@
 function [Xs, P] = EvaluateClassifier(X, NetParams)
     W = NetParams.W;
     b = NetParams.b;
-    
-    k = size(W, 2);
+    k = NetParams.k;
 
-    s = W{1} * X + repmat(b{1}, [1, size(X, 2)]);
-    Xs{1} = max(0, s);
+    Xs{1} = max(0, W{1} * X + repmat(b{1}, [1, size(X, 2)]));
 
     for i=2:(k-1)
-        s = W{i} * Xs{i-1} + repmat(b{i}, [1, size(Xs{i-1}, 2)]);
-        Xs{end + 1} = max(0, s);
+        Xs{end + 1} = max(0, W{i} * Xs{i-1} + repmat(b{i}, [1, size(Xs{i-1}, 2)]));
     end
 
     % k - 1 = Nb of calculated Xs, input not included
@@ -19,6 +16,5 @@ function [Xs, P] = EvaluateClassifier(X, NetParams)
     
     % Final linear transformation
     s = W{k} * Xs{k-1} + repmat(b{k}, [1, size(X, 2)]);
-
     P = softmax(s);
 end

@@ -1,19 +1,28 @@
-function [grad_W, grad_b] = ComputeGradients(X_batch, Y_batch, H_batch, P_batch, theta, lambda)
+function Grads = ComputeGradients(X_batch, Y_batch, Xs_batch, P_batch, NetParams, lambda)
     
     n_batch = size(X_batch, 2);
+    k = NetParams.k;
+    W = NetParams.W;
+    b = NetParams.b;
+    grad_W = cell(1, k);
+    grad_b = cell(1, k);
     
+    % Propagate the gradient through the loss and softmax operations
     G_batch = - (Y_batch - P_batch);
-    
-    grad_W2 = (G_batch * H_batch')/n_batch + 2 * lambda * theta{2};
-    grad_b2 = (G_batch * ones(n_batch, 1))/n_batch;
-    
-    %Propagate the grad back through the second layer
-    G_batch = theta{2}' * G_batch;
-    G_batch( H_batch <= 0 ) = 0;
-    
-    grad_W1 = (G_batch * X_batch')/n_batch + 2 * lambda * theta{1};
-    grad_b1 = (G_batch * ones(n_batch, 1))/n_batch;
-    
-    grad_W = {grad_W1, grad_W2};
-    grad_b = {grad_b1, grad_b2};
+
+    for l=k:-1:2
+        % Compute grad of J wrt W{l} and b{l}
+        grad_W{l} = (G_batch * Xs_batch{l-1}')/n_batch + 2 * lambda * W{l};
+        grad_b{l} = (G_batch * ones(n_batch, 1))/n_batch;
+
+        % Propagate G_batch to the previous layer
+        G_batch = W{l}' * G_batch;
+        G_batch( Xs_batch{l-1} <= 0 ) = 0;
+    end
+
+    grad_W{1} = (G_batch * X_batch')/n_batch + 2 * lambda * W{1};
+    grad_b{1} = (G_batch * ones(n_batch, 1))/n_batch;
+
+    Grads.W = grad_W;
+    Grads.b = grad_b;
 end

@@ -13,7 +13,6 @@ test_path = "test_batch.mat";
 rng(400);
 mean_train = mean(X_train, 2);
 std_train = std(X_train, 0, 2);
-
 X_train = Preprocess(X_train, mean_train, std_train);
 X_valid = Preprocess(X_valid, mean_train, std_train);
 X_test = Preprocess(X_test, mean_train, std_train);
@@ -21,9 +20,10 @@ X_test = Preprocess(X_test, mean_train, std_train);
 [~, n] = size(X_train);
 
 %% INIT NETWORK PARAM
-k = 3;
-hid_dim = [20 50];
-NetParams = InitializeParam(X_train, Y_train, hid_dim, k);
+k = 4;
+hid_dim = [50, 30, 20];
+use_bn = false;
+NetParams = InitializeParam(X_train, Y_train, hid_dim, k, use_bn);
 W = NetParams.W;
 b = NetParams.b;
 d_batch = 10;
@@ -37,32 +37,27 @@ n_epochs = 200;
 
 %% EVAL THE NETWORK FUNCTION
 
+%% Testing for a batch with less dimensions
 X_batch = X_train(1:d_batch, 1:end_batch);
-W1_batch = W{1};
-W{1} = W1_batch(:, 1:d_batch);
+Y_batch = Y_train(:, 1:end_batch);
+NetParams_batch = InitializeParam(X_batch, Y_batch, hid_dim, k, use_bn);
+[Xs_batch, P_batch] = EvaluateClassifier(X_batch, NetParams_batch);
 
-NetParams.W = W;
-[Xs, P] = EvaluateClassifier(X_batch, NetParams);
-
+%% Testing for the whole trainset
 % [Xs, P] = EvaluateClassifier(X_train, NetParams);
 
-% %% COMPUTE THE COST FUNCTION
-% [J, loss] = ComputeCost(X_train, Y_train, W, b, lambda);
+%% COMPUTE THE COST FUNCTION
+[J, loss] = ComputeCost(X_train, Y_train, NetParams, lambda);
 
-% %% COMPUTE THE GRADIENTS
-% X_batch = X_train(1:d_batch, 1:end_batch);
-% Y_batch = Y_train(:, 1:end_batch);
-% theta_batch = InitializeParam(X_batch, Y_batch, m);
-% W_batch = theta_batch(1:2);
-% b_batch = theta_batch(3:4);
+%% COMPUTE THE GRADIENTS
+GradsAn = ComputeGradients(X_batch, Y_batch, Xs_batch, P_batch, NetParams_batch, lambda);
+GradsNum = ComputeGradsNumSlow(X_batch, Y_batch, NetParams_batch, lambda, h);
 
-% %% GRADIENTS COMPARISONS
-% [H_batch, P_batch] = EvaluateClassifier(X_batch, theta_batch);
-% [grad_W_an, grad_b_an] = ComputeGradients(X_batch, Y_batch, H_batch, P_batch, theta_batch, lambda);
+%% GRADIENTS COMPARISONS
+Errors = ComputeRelativeError(GradsAn, GradsNum, eps);
 
-% % [grad_b_num_fast, grad_W_num_fast] = ComputeGradsNum(X_batch, Y_batch, W_batch, b_batch, lambda, h);
-% [grad_b_num_slow, grad_W_num_slow] = ComputeGradsNumSlow(X_batch, Y_batch, W_batch, b_batch, lambda, h);
-
-% % [grad_W_err_fast, grad_b_err_fast] = ComputeRelativeError(grad_W_an, grad_b_an, grad_W_num_fast, grad_b_num_fast, eps);
-% [grad_W_err_slow, grad_b_err_slow] = ComputeRelativeError(grad_W_an, grad_b_an, grad_W_num_slow, grad_b_num_slow, eps);
-% % [grad_W_err_given, grad_b_err_given] = ComputeRelativeError(grad_W_num_slow, grad_b_num_slow, grad_W_num_fast, grad_b_num_fast, eps);
+for i=1:k
+    fprintf('LAYER %d:\n', i)
+    fprintf('W: %.2d\n', max(Errors.W{i}, [], 'all'))
+    fprintf('b: %.2d\n\n', max(Errors.b{i}, [], 'all'))
+end

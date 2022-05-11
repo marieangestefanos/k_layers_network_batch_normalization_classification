@@ -1,4 +1,4 @@
-function NetParams = InitializeParam(X_train, Y_train, hid_dim, k)
+function NetParams = InitializeParam(X_train, Y_train, hid_dim, k, use_bn)
     [d, ~] = size(X_train);
     [K, ~] = size(Y_train);
     
@@ -29,4 +29,6 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, k)
     
     NetParams.W = W;
     NetParams.b = b;
+    NetParams.k = k;
+    NetParams.use_bn = use_bn;
 end
