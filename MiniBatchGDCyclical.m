@@ -56,11 +56,6 @@ function [NetParams, J_train_array, loss_train_array, ...
                 NetParams.b{i} = NetParams.b{i} - eta * Grads.b{i};
             end
 
-            % theta{1} = theta{1} - eta * grad_W{1};
-            % theta{2} = theta{2} - eta * grad_W{2};
-            % theta{3} = theta{3} - eta * grad_b{1};
-            % theta{4} = theta{4} - eta * grad_b{2};
-
             etas(end+1) = eta;
             t = t + 1;
             l = floor(t/(2*n_s));
