@@ -1,9 +1,9 @@
-function accuracy = ComputeAccuracy(X, y, theta)
+function accuracy = ComputeAccuracy(X, y, NetParams)
     n = size(y, 1);
 
     acc = zeros(1, n);
 
-    [~, P] = EvaluateClassifier(X, theta);
+    [~, P] = EvaluateClassifier(X, NetParams);
     prediction = Argmax(P);
 
     for i = 1:n

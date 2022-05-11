@@ -1,8 +1,9 @@
-function [Wstar, bstar, J_train_array, loss_train_array, ...
+function [NetParams, J_train_array, loss_train_array, ...
     J_valid_array, loss_valid_array, acc_train, acc_valid, etas] = ...
-    MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, theta, lambda, etaparams)
+    MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams)
 
     n = size(X_train, 2);
+    k = NetParams.k;
     
     nb_cycles = etaparams{1};
     n_s = etaparams{2};
@@ -37,32 +38,36 @@ function [Wstar, bstar, J_train_array, loss_train_array, ...
             X_batch = X_train(:, idx_permutation(inds));
             Y_batch = Y_train(:, idx_permutation(inds));
     
-            [H_batch, P_batch] = EvaluateClassifier(X_batch, theta);
+            [Xs_batch, P_batch] = EvaluateClassifier(X_batch, NetParams);
     
-            [grad_W, grad_b] = ComputeGradients(X_batch, Y_batch, H_batch, P_batch, theta, lambda);
+            Grads = ComputeGradients(X_batch, Y_batch, Xs_batch, P_batch, NetParams, lambda);
+            grad_W = Grads.W;
+            grad_b = Grads.b;
             
-            if mod(floor(t/n_s), 2) == 0 %case of equation 14 : positive slope
-                
+            % Cycling learning rate
+            if mod(floor(t/n_s), 2) == 0 %case of positive slope
                 eta = eta_min + (t - 2*l*n_s)/n_s*(eta_max - eta_min);
-
-            else %case of equation 15 : negative slope
-
+            else %case of negative slope
                 eta = eta_max - (t - (2*l+1)*n_s)/n_s*(eta_max - eta_min);
-
             end
 
-            theta{1} = theta{1} - eta * grad_W{1};
-            theta{2} = theta{2} - eta * grad_W{2};
-            theta{3} = theta{3} - eta * grad_b{1};
-            theta{4} = theta{4} - eta * grad_b{2};
+            for i=1:k
+                NetParams.W{i} = NetParams.W{i} - eta * Grads.W{i};
+                NetParams.b{i} = NetParams.b{i} - eta * Grads.b{i};
+            end
+
+            % theta{1} = theta{1} - eta * grad_W{1};
+            % theta{2} = theta{2} - eta * grad_W{2};
+            % theta{3} = theta{3} - eta * grad_b{1};
+            % theta{4} = theta{4} - eta * grad_b{2};
 
             etas(end+1) = eta;
             t = t + 1;
             l = floor(t/(2*n_s));
 
 
-            [J_train, loss_train] = ComputeCost(X_train, Y_train, theta(1:2), theta(3:4), lambda);
-            [J_valid, loss_valid] = ComputeCost(X_valid, Y_valid, theta(1:2), theta(3:4), lambda);
+            [J_train, loss_train] = ComputeCost(X_train, Y_train, NetParams, lambda);
+            [J_valid, loss_valid] = ComputeCost(X_valid, Y_valid, NetParams, lambda);
             
             interval_size = n/n_batch/10; % 10 = wanted_nb_points_per_cycle
 
@@ -73,8 +78,8 @@ function [Wstar, bstar, J_train_array, loss_train_array, ...
                 J_valid_array(end+1) = J_valid;
                 loss_valid_array(end+1) = loss_valid;
         
-                acc_train(end+1) = ComputeAccuracy(X_train, y_train, theta);
-                acc_valid(end+1) = ComputeAccuracy(X_valid, y_valid, theta);
+                acc_train(end+1) = ComputeAccuracy(X_train, y_train, NetParams);
+                acc_valid(end+1) = ComputeAccuracy(X_valid, y_valid, NetParams);
 
             end
 
@@ -83,23 +88,9 @@ function [Wstar, bstar, J_train_array, loss_train_array, ...
             end
     
         end
-    
-%         [J_train, loss_train] = ComputeCost(X_train, Y_train, theta(1:2), theta(3:4), lambda);
-%         [J_valid, loss_valid] = ComputeCost(X_valid, Y_valid, theta(1:2), theta(3:4), lambda);
-%     
-%         J_train_array(epoch) = J_train;
-%         loss_train_array(epoch) = loss_train;
-%         J_valid_array(epoch) = J_valid;
-%         loss_valid_array(epoch) = loss_valid;
-% 
-%         acc_train(epoch) = ComputeAccuracy(X_train, y_train, theta);
-%         acc_valid(epoch) = ComputeAccuracy(X_valid, y_valid, theta);
 
         epoch = epoch + 1;
                     
     end
-        
-    Wstar = theta(1:2);
-    bstar = theta(3:4);
 
 end
