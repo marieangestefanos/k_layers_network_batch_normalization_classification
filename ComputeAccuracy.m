@@ -1,9 +1,9 @@
-function accuracy = ComputeAccuracy(X, y, NetParams)
+function accuracy = ComputeAccuracy(X, y, NetParams, varargin)
     n = size(y, 1);
 
     acc = zeros(1, n);
 
-    [~, P] = EvaluateClassifier(X, NetParams);
+    [~, P] = EvaluateClassifier(X, NetParams, varargin);
     prediction = Argmax(P);
 
     for i = 1:n

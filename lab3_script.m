@@ -268,61 +268,76 @@ X_valid = Preprocess(X_valid, mean_train, std_train);
 % % Print test set accuracy
 % fprintf('Test set accuracy: %.1f%%\n', ComputeAccuracy(X_test, y_test, NetParams_star)*100)
 
-%% 9-layer net (50-50) - He init
-hid_dim = [50, 30, 20, 20, 10, 10, 10, 10];
+% %% 9-layer net (50-50) - He init
+% hid_dim = [50, 30, 20, 20, 10, 10, 10, 10];
+% k = hid_dim + 1;
+% init_type = "he";
+% use_bn = false;
+
+% n_batch = 100;
+% eta_min = 1e-5;
+% eta_max = 1e-1;
+% lambda = 0.005;
+% n_s = 5 * 45000 / n_batch; %2250
+% nb_cycles = 2;
+% etaparams = {nb_cycles, n_s, eta_min, eta_max};
+
+% NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn);
+
+% [NetParams_star, J_train_array, loss_train_array, ...
+%    J_valid_array, loss_valid_array, acc_train, acc_valid, etas] = ...
+%    MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
+
+% len_array = size(J_train_array, 2);
+% figure;
+% update_steps = (1:len_array)*10;
+% nb_updates = size(J_train_array, 2);
+% plot(update_steps, J_train_array, update_steps, J_valid_array, '--');
+% yl = ylim;
+% ylim([0, yl(2)]);
+% title('Cost J over updates');
+% xlabel('update steps');
+% ylabel('cost J');
+% legend('Training','Validation');
+% figure;
+% plot(update_steps, loss_train_array, update_steps, loss_valid_array, '--');
+% yl = ylim;
+% ylim([0, yl(2)]);
+% title('Loss over updates');
+% xlabel('update steps');
+% ylabel('loss');
+% legend('Training','Validation');
+% figure;
+% plot(update_steps, acc_train, update_steps, acc_valid, '--');
+% yl = ylim;
+% ylim([0, yl(2)]);
+% title('Accuracy over updates');
+% xlabel('update steps');
+% ylabel('accuracy');
+% legend('Training','Validation');
+
+% nb_updates = size(etas, 2);
+% figure;
+% plot(1:nb_updates, etas);
+% title('Eta values over updates');
+% xlabel('update steps');
+% ylabel('eta');
+
+%% Batch normalization - tests
+hid_dim = [50, 30];
 k = hid_dim + 1;
 init_type = "he";
-use_bn = false;
+use_bn = true;
 
 n_batch = 100;
 eta_min = 1e-5;
 eta_max = 1e-1;
 lambda = 0.005;
-n_s = 5 * 45000 / n_batch; %2250
-nb_cycles = 2;
+n_s = 5;
+nb_cycles = 1;
 etaparams = {nb_cycles, n_s, eta_min, eta_max};
+alpha = 0.7;
 
-NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn);
-
-[NetParams_star, J_train_array, loss_train_array, ...
-   J_valid_array, loss_valid_array, acc_train, acc_valid, etas] = ...
-   MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
-
-len_array = size(J_train_array, 2);
-figure;
-update_steps = (1:len_array)*10;
-nb_updates = size(J_train_array, 2);
-plot(update_steps, J_train_array, update_steps, J_valid_array, '--');
-yl = ylim;
-ylim([0, yl(2)]);
-title('Cost J over updates');
-xlabel('update steps');
-ylabel('cost J');
-legend('Training','Validation');
-figure;
-plot(update_steps, loss_train_array, update_steps, loss_valid_array, '--');
-yl = ylim;
-ylim([0, yl(2)]);
-title('Loss over updates');
-xlabel('update steps');
-ylabel('loss');
-legend('Training','Validation');
-figure;
-plot(update_steps, acc_train, update_steps, acc_valid, '--');
-yl = ylim;
-ylim([0, yl(2)]);
-title('Accuracy over updates');
-xlabel('update steps');
-ylabel('accuracy');
-legend('Training','Validation');
-
-nb_updates = size(etas, 2);
-figure;
-plot(1:nb_updates, etas);
-title('Eta values over updates');
-xlabel('update steps');
-ylabel('eta');
-
-%%
-% Print test set accuracy
-fprintf('Test set accuracy: %.1f%%\n', ComputeAccuracy(X_test, y_test, NetParams_star)*100)
+%% Testing for a batch with less dimensions
+NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha);
+[Xs, P, S, S_hat, mu, v] = EvaluateClassifier(X_train, NetParams);

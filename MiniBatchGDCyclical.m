@@ -4,7 +4,8 @@ function [NetParams, J_train_array, loss_train_array, ...
 
     n = size(X_train, 2);
     k = NetParams.k;
-    
+    alpha = NetParams.alpha;
+
     nb_cycles = etaparams{1};
     n_s = etaparams{2};
     eta_min = etaparams{3};
@@ -38,8 +39,16 @@ function [NetParams, J_train_array, loss_train_array, ...
             X_batch = X_train(:, idx_permutation(inds));
             Y_batch = Y_train(:, idx_permutation(inds));
     
-            [Xs_batch, P_batch] = EvaluateClassifier(X_batch, NetParams);
-    
+            [Xs_batch, S, S_hat, mean, var, P_batch] = EvaluateClassifier(X_batch, NetParams);
+
+            %% Exponential moving average
+            if l == 0 & j == 1
+                mean_av = mean;
+                var_av = var;
+            else:
+                mean_av = alpha * mean_av + (1 - alpha) * mean;
+                var_av = alpha * var_av + (1 - alpha) * var;
+
             Grads = ComputeGradients(X_batch, Y_batch, Xs_batch, P_batch, NetParams, lambda);
             grad_W = Grads.W;
             grad_b = Grads.b;
