@@ -11,8 +11,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
         b{1} = zeros(hid_dim(1), 1);
         
         if use_bn
-            gamma{1} = ones(hid_dim(1), 1);
-            beta{1} = zeros(hid_dim(1), 1);
+            gammas{1} = ones(hid_dim(1), 1);
+            betas{1} = zeros(hid_dim(1), 1);
         end    
         
         % From second to last hidden layer param
@@ -35,8 +35,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
                 for i = 1:(nb_hid_layers-1)
                     W{i+1} = randn( hid_dim(i+1), hid_dim(i) ) / sqrt(hid_dim(i));
                     b{i+1} = zeros(hid_dim(i+1), 1);
-                    gamma{i+1} = ones(hid_dim(i+1), 1);
-                    beta{i+1} = zeros(hid_dim(i+1), 1);
+                    gammas{i+1} = ones(hid_dim(i+1), 1);
+                    betas{i+1} = zeros(hid_dim(i+1), 1);
                 end
             else
                 i = 0;
@@ -48,8 +48,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
         W{end+1} = randn( K, hid_dim(i+1) ) / sqrt(hid_dim(i+1));
         b{end+1} = zeros(K, 1);
         if use_bn
-            gamma{end+1} = ones(K, 1);
-            beta{end+1} = zeros(K, 1);
+            gammas{end+1} = ones(K, 1);
+            betas{end+1} = zeros(K, 1);
         end
     
     elseif strcmp(init_type, "he")
@@ -58,8 +58,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
         b{1} = zeros(hid_dim(1), 1);
 
         if use_bn
-            gamma{1} = ones(hid_dim(1), 1);
-            beta{1} = zeros(hid_dim(1), 1);
+            gammas{1} = ones(hid_dim(1), 1);
+            betas{1} = zeros(hid_dim(1), 1);
         end
         
         % From second to last hidden layer param
@@ -82,8 +82,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
                 for i = 1:(nb_hid_layers-1)
                     W{i+1} = randn( hid_dim(i+1), hid_dim(i) ) * sqrt( 2 / hid_dim(i));
                     b{i+1} = zeros(hid_dim(i+1), 1);
-                    gamma{i+1} = ones(hid_dim(i+1), 1);
-                    beta{i+1} = zeros(hid_dim(i+1), 1);
+                    gammas{i+1} = ones(hid_dim(i+1), 1);
+                    betas{i+1} = zeros(hid_dim(i+1), 1);
                 end
             else
                 i = 0;
@@ -96,8 +96,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
         b{end+1} = zeros(K, 1);
 
         if use_bn
-            gamma{end+1} = ones(K, 1);
-            beta{end+1} = zeros(K, 1);
+            gammas{end+1} = ones(K, 1);
+            betas{end+1} = zeros(K, 1);
         end
     
     else
@@ -111,8 +111,8 @@ function NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_b
     NetParams.use_bn = use_bn;
     
     if use_bn
-        NetParams.alpha = varargin{end};
-        NetParams.gamma = gamma;
-        NetParams.beta = beta;
+        NetParams.alpha = varargin{1};
+        NetParams.gammas = gammas;
+        NetParams.betas = betas;
     end;
 end

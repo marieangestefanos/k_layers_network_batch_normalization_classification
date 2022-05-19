@@ -3,7 +3,7 @@ function accuracy = ComputeAccuracy(X, y, NetParams, varargin)
 
     acc = zeros(1, n);
 
-    [~, P] = EvaluateClassifier(X, NetParams, varargin);
+    [~, P] = EvaluateClassifier(X, NetParams, varargin{1}, varargin{2});
     prediction = Argmax(P);
 
     for i = 1:n
