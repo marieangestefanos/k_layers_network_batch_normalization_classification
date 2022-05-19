@@ -366,7 +366,7 @@ alpha = 0.7;
 % fprintf('W: %.2d\n', max(Errors.W{k}, [], 'all'))
 % fprintf('b: %.2d\n\n', max(Errors.b{k}, [], 'all'))
 
-%% Exercise 3: 3-layer net (50-50) - He init
+%% Exercise 3: 3- and 9-layer net (50-50) - He init
 
     %% Preprocess data
 path_batch1 = "data_batch_1.mat";
@@ -397,7 +397,8 @@ X_valid = Preprocess(X_valid, mean_train, std_train);
 
     %% Network settings
 
-hid_dim = [50, 50];
+% hid_dim = [50, 50];
+hid_dim = [50, 30, 20, 20, 10, 10, 10, 10];
 k = hid_dim + 1;
 init_type = "he";
 use_bn = true;
