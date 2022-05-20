@@ -555,7 +555,9 @@ X_valid = Preprocess(X_valid, mean_train, std_train);
 
 
 % %%% Sensitivity to initialization - With Batch Norm
-% 
+
+rng(300);
+
 % hid_dim = [50, 50];
 % k = hid_dim + 1;
 % use_bn = true;
@@ -564,11 +566,11 @@ X_valid = Preprocess(X_valid, mean_train, std_train);
 % eta_min = 1e-5;
 % eta_max = 1e-1;
 % lambda = 0.005;
-% n_s = 2 * 45000 / n_batch; %900
+% n_s = 5 * 45000 / n_batch; %2250
 % nb_cycles = 2;
 % etaparams = {nb_cycles, n_s, eta_min, eta_max};
 % 
-% sigmas = [1e-1 1e-3 1e-4];
+% sigmas = [1e-1 1e-2 1e-3 1e-4];
 % 
 % for sig_idx=1:length(sigmas)
 % 
@@ -628,11 +630,11 @@ X_valid = Preprocess(X_valid, mean_train, std_train);
 
 use_bn = false;
 
-n_s = 2 * 45000 / n_batch; %900
+n_s = 5 * 45000 / n_batch; %2250
 nb_cycles = 2;
 etaparams = {nb_cycles, n_s, eta_min, eta_max};
 
-sigmas = [1e-1 1e-3 1e-4];
+sigmas = [1e-1 1e-2 1e-3];
 
 for sig_idx=1:length(sigmas)
 
