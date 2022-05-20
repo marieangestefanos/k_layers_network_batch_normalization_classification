@@ -1,5 +1,10 @@
 function [J, loss] = ComputeCost(X, Y, NetParams, lambda, varargin)
-    [~, P] = EvaluateClassifier(X, NetParams, varargin{1}, varargin{2});
+
+    if nargin < 5
+        [~, P] = EvaluateClassifier(X, NetParams);
+    else
+        [~, P] = EvaluateClassifier(X, NetParams, varargin{1}, varargin{2});
+    end
     n = size(Y, 2);
     lcross = zeros(1, n);
     W = NetParams.W;

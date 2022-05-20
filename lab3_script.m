@@ -465,149 +465,164 @@ X_valid = Preprocess(X_valid, mean_train, std_train);
 
 %% Lambda search - coarch search 1
 
-save_path1 = "~/Documents/kth/dl/labs/lab2/Saved_Files/lambdas_results1.txt";
+% save_path1 = "~/Documents/kth/dl/labs/lab3/Saved_Files/lambdas_results1.txt";
 
-hid_dim = [50, 50];
-k = hid_dim + 1;
-use_bn = true;
+% hid_dim = [50, 50];
+% k = hid_dim + 1;
+% use_bn = true;
 
-n_batch = 100;
-eta_min = 1e-5;
-eta_max = 1e-1;
-lambda = 0.005;
-n_s = 5 * 45000 / n_batch; %2250
-nb_cycles = 2;
-etaparams = {nb_cycles, n_s, eta_min, eta_max};
+% n_batch = 100;
+% eta_min = 1e-5;
+% eta_max = 1e-1;
+% lambda = 0.005;
+% n_s = 5 * 45000 / n_batch; %2250
+% nb_cycles = 2;
+% etaparams = {nb_cycles, n_s, eta_min, eta_max};
 
-nb_lambdas = 8;
-lambdas = linspace(1e-5, 1e-1, nb_lambdas);
+% nb_lambdas = 8;
+% lambdas = linspace(1e-5, 1e-1, nb_lambdas);
 
-writecell({'lambda', 'acc_valid', 'acc_test'}, save_path1, 'Delimiter', 'tab');
+% writecell({'lambda', 'acc_valid', 'acc_test'}, save_path1, 'Delimiter', 'tab');
 
-for lbda_idx=1:nb_lambdas
+% for lbda_idx=1:nb_lambdas
 
-    lambda = lambdas(lbda_idx)
+%     lambda = lambdas(lbda_idx)
 
-    NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha);
+%     NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha);
     
-    [NetParams_star, J_train_array, loss_train_array, ...   
-    J_valid_array, loss_valid_array, acc_train, acc_valid, etas, mu_av, v_av] = ...
-    MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
+%     [NetParams_star, J_train_array, loss_train_array, ...   
+%     J_valid_array, loss_valid_array, acc_train, acc_valid, etas, mu_av, v_av] = ...
+%     MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
 
-    acc_valid(end)
-    test_acc = ComputeAccuracy(X_test, y_test, NetParams_star, mu_av, v_av)
+%     acc_valid(end)
+%     test_acc = ComputeAccuracy(X_test, y_test, NetParams_star, mu_av, v_av)
     
-    writematrix([lambda acc_valid(end) test_acc],save_path1,'WriteMode','append', 'Delimiter', 'tab');
+%     writematrix([lambda acc_valid(end) test_acc],save_path1,'WriteMode','append', 'Delimiter', 'tab');
 
-end
+% end
 
-lambdas_results1 = importdata(save_path1);
-lambda_accuracies = lambdas_results1.data
+%% Lambda search - fine search 1
 
+% lambdas_results1 = importdata(save_path1);
+% lambda_accuracies = lambdas_results1.data
 % 
-% path2 = "~/Documents/kth/dl/labs/lab2/Saved_Files/lambdas_results2.txt";
-% lbdas2 = importdata(path2);
-% data2 = lbdas2.data;    
-% [~, argmax] = max(data2(:, 2));
-% lbda_min = data2(argmax - 1, 1);
-% lbda_max = data2(argmax + 1, 1);
+% path1 = "~/Documents/kth/dl/labs/lab3/Saved_Files/lambdas_results1.txt";
 % 
+% lbdas1 = importdata(path1);
+% data1 = lbdas1.data;    
+% [~, argmax] = max(data1(:, 2));
+% lbda_min = data1(argmax - 1, 1);
+% lbda_max = data1(argmax + 1, 1);
+
+% lbda_min = 1e-5;
+% lbda_max = 0.0285785714285714;
 % nb_lambdas = 8;
 % lambdas = linspace(lbda_min, lbda_max, nb_lambdas);
-% % 
+%  
+% save_path2 = "~/Documents/kth/dl/labs/lab3/Saved_Files/lambdas_results2.txt";
 % writecell({'lambda', 'acc_valid'}, save_path2, 'Delimiter', 'tab');
+%  
+% %% Recall settings
+% hid_dim = [50, 50];
+% k = hid_dim + 1;
+% use_bn = true;
+% n_batch = 100;
+% eta_min = 1e-5;
+% eta_max = 1e-1;
+% lambda = 0.005;
+% n_s = 5 * 45000 / n_batch; %2250
+% nb_cycles = 2;
+% etaparams = {nb_cycles, n_s, eta_min, eta_max};
+% 
+% writecell({'lambda', 'acc_valid', 'acc_test'}, save_path2, 'Delimiter', 'tab');
 % 
 % for lbda_idx=1:nb_lambdas
 % 
-%     lambda = lambdas(lbda_idx);
+%     lambda = lambdas(lbda_idx)
 % 
-%     [Wstar, bstar, J_train_array, loss_train_array, ...
-%        J_valid_array, loss_valid_array, acc_train, acc_valid, etas] = ...
-%        MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, theta, lambda, etaparams);
+%     NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha);
+%     
+%     [NetParams_star, J_train_array, loss_train_array, ...   
+%     J_valid_array, loss_valid_array, acc_train, acc_valid, etas, mu_av, v_av] = ...
+%     MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
 % 
-%     writematrix([lambda acc_valid(end)],save_path2,'WriteMode','append', 'Delimiter', 'tab');
+%     acc_valid(end)
+%     test_acc = ComputeAccuracy(X_test, y_test, NetParams_star, mu_av, v_av)
+%     
+%     writematrix([lambda acc_valid(end) test_acc], save_path2, 'WriteMode', 'append', 'Delimiter', 'tab');
 % 
 % end
 
-% lambdas_results3 = importdata(save_path3);
-% lambda_accuracies = lambdas_results3.data;
 
-%% Best found lambda settings - 3 cycles
-
-% lbdas3 = importdata(save_path3);
-% data2 = lbdas3.data;    
-% [~, argmax] = max(data2(:, 2));
-% lambda_finalist = data2(argmax, 1);
-
-%%% Sensitivity to initialization - With Batch Norm
-
-hid_dim = [50, 50];
-k = hid_dim + 1;
-use_bn = true;
-
-n_batch = 100;
-eta_min = 1e-5;
-eta_max = 1e-1;
-lambda = 0.005;
-n_s = 2 * 45000 / n_batch; %900
-nb_cycles = 2;
-etaparams = {nb_cycles, n_s, eta_min, eta_max};
-
-sigmas = [1e-1 1e-3 1e-4];
-
-for sig_idx=1:length(sigmas)
-
-    sig = sigmas(sig_idx);
-    NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha, sig);
-
-    [NetParams_star, J_train_array, loss_train_array, ...   
-    J_valid_array, loss_valid_array, acc_train, acc_valid, etas, mu_av, v_av] = ...
-    MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
-
-    title_string = "/home/stefanom/Documents/kth/dl/labs/lab3/img/qu5_BN_sig" + num2str(sig);
-    len_array = size(J_train_array, 2);
-    figure;
-    update_steps = (1:len_array)*10;
-    nb_updates = size(J_train_array, 2);
-    plot(update_steps, J_train_array, update_steps, J_valid_array, '--');
-    yl = ylim;
-    ylim([0, yl(2)]);
-    title('Cost J over updates');
-    xlabel('update steps');
-    ylabel('cost J');
-    legend('Training','Validation');
-    saveas(gcf, title_string + "J.png");
-    figure;
-    plot(update_steps, loss_train_array, update_steps, loss_valid_array, '--');
-    yl = ylim;
-    ylim([0, yl(2)]);
-    title('Loss over updates');
-    xlabel('update steps');
-    ylabel('loss');
-    legend('Training','Validation');
-    saveas(gcf, title_string + "loss.png")
-    figure;
-    plot(update_steps, acc_train, update_steps, acc_valid, '--');
-    yl = ylim;
-    ylim([0, yl(2)]);
-    title('Accuracy over updates');
-    xlabel('update steps');
-    ylabel('accuracy');
-    legend('Training','Validation');
-    saveas(gcf, title_string + "acc.png")
-
-    nb_updates = size(etas, 2);
-    figure;
-    plot(1:nb_updates, etas);
-    title('Eta values over updates');
-    xlabel('update steps');
-    ylabel('eta');
-    saveas(gcf, title_string + "etas.png")
-
-    % Print test set accuracy
-    fprintf('Test set accuracy: %.1f%%\n', ComputeAccuracy(X_test, y_test, NetParams_star, mu_av, v_av)*100)
-
-end
+% %%% Sensitivity to initialization - With Batch Norm
+% 
+% hid_dim = [50, 50];
+% k = hid_dim + 1;
+% use_bn = true;
+% 
+% n_batch = 100;
+% eta_min = 1e-5;
+% eta_max = 1e-1;
+% lambda = 0.005;
+% n_s = 2 * 45000 / n_batch; %900
+% nb_cycles = 2;
+% etaparams = {nb_cycles, n_s, eta_min, eta_max};
+% 
+% sigmas = [1e-1 1e-3 1e-4];
+% 
+% for sig_idx=1:length(sigmas)
+% 
+%     sig = sigmas(sig_idx);
+%     NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha, sig);
+% 
+%     [NetParams_star, J_train_array, loss_train_array, ...   
+%     J_valid_array, loss_valid_array, acc_train, acc_valid, etas, mu_av, v_av] = ...
+%     MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
+% 
+%     title_string = "/home/stefanom/Documents/kth/dl/labs/lab3/img/qu5_BN_sig" + num2str(sig);
+%     len_array = size(J_train_array, 2);
+%     figure;
+%     update_steps = (1:len_array)*10;
+%     nb_updates = size(J_train_array, 2);
+%     plot(update_steps, J_train_array, update_steps, J_valid_array, '--');
+%     yl = ylim;
+%     ylim([0, yl(2)]);
+%     title('Cost J over updates');
+%     xlabel('update steps');
+%     ylabel('cost J');
+%     legend('Training','Validation');
+%     saveas(gcf, title_string + "J.png");
+%     figure;
+%     plot(update_steps, loss_train_array, update_steps, loss_valid_array, '--');
+%     yl = ylim;
+%     ylim([0, yl(2)]);
+%     title('Loss over updates');
+%     xlabel('update steps');
+%     ylabel('loss');
+%     legend('Training','Validation');
+%     saveas(gcf, title_string + "loss.png")
+%     figure;
+%     plot(update_steps, acc_train, update_steps, acc_valid, '--');
+%     yl = ylim;
+%     ylim([0, yl(2)]);
+%     title('Accuracy over updates');
+%     xlabel('update steps');
+%     ylabel('accuracy');
+%     legend('Training','Validation');
+%     saveas(gcf, title_string + "acc.png")
+% 
+%     nb_updates = size(etas, 2);
+%     figure;
+%     plot(1:nb_updates, etas);
+%     title('Eta values over updates');
+%     xlabel('update steps');
+%     ylabel('eta');
+%     saveas(gcf, title_string + "etas.png")
+% 
+%     % Print test set accuracy
+%     fprintf('Test set accuracy: %.1f%%\n', ComputeAccuracy(X_test, y_test, NetParams_star, mu_av, v_av)*100)
+% 
+% end
 
 %%% Sensitivity to initialization - Without Batch Norm
 
@@ -625,7 +640,7 @@ for sig_idx=1:length(sigmas)
     NetParams = InitializeParam(X_train, Y_train, hid_dim, init_type, use_bn, alpha, sig);
 
     [NetParams_star, J_train_array, loss_train_array, ...   
-    J_valid_array, loss_valid_array, acc_train, acc_valid, etas, mu_av, v_av] = ...
+    J_valid_array, loss_valid_array, acc_train, acc_valid, etas] = ...
     MiniBatchGDCyclical(X_train, Y_train, y_train, X_valid, Y_valid, y_valid, n_batch, NetParams, lambda, etaparams);
 
     title_string = "/home/stefanom/Documents/kth/dl/labs/lab3/img/qu5_noBN_sig" + num2str(sig);

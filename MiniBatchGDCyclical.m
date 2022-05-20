@@ -42,7 +42,7 @@ function [NetParams, J_train_array, loss_train_array, ...
         
                 [Xs_batch, P_batch] = EvaluateClassifier(X_batch, NetParams);
                     
-                Grads = ComputeGradients(X_batch, Y_batch, Xs_batch, P_batch, NetParams, lambda, S, S_hat, mu, v);
+                Grads = ComputeGradients(X_batch, Y_batch, Xs_batch, P_batch, NetParams, lambda);
                 grad_W = Grads.W;
                 grad_b = Grads.b;
                     
